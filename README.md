@@ -18,12 +18,12 @@ CONFIGURATION
 
 Only needed parameters are the managed languages and the default one (when the language of the user is not managed)
 
-``
-plugins:
-    Multilang:
-        languages: ['it', 'en']
-        default: 'it'
-``
+```
+plugins: 
+  Multilang: 
+    languages: ['it', 'en'] 
+    default: 'it' 
+```
 
 USAGE
 =====
