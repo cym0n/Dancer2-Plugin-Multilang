@@ -101,3 +101,69 @@ sub wanted_language
 register_plugin for_versions => [ 2 ];
 
 1;
+
+=encoding utf8
+
+=head1 NAME
+
+Dancer2::Plugin::Multilang - Dancer2 Plugin to create multilanguage sites
+
+
+=head1 DESCRIPTION
+
+A plugin for Dancer2 to create multilanguage sites. In your app you can configure any route you want, as /myroute/to/page.
+
+Plugin will make the app answer to /en/myroute/to/page or /it/myroute/to/page giving the language path to the route manager as a Dancer keyword.
+It will also redirect navigation using information from the headers transmitted from the browser. Language change during navigation will be managed via cookie.
+
+Multilanguage SEO headers will be generated to give advice to the search engines about the language of the pages.
+
+=head1 SYNOPSIS
+
+    # In your Dancer2 app,
+    use Dancer2::Plugin::Multilang
+
+    #In your config.yml
+    plugins: 
+      Multilang: 
+        languages: ['it', 'en'] 
+        default: 'it'
+
+    where languages is the array of all the languages managed and default is the response language if no information about language can be retrieved.
+
+    #In the routes
+    get '/route/to/page' => sub {
+        if( language == 'en' )
+        {
+            /* english navigation */
+        }
+        elsif( language == 'it' )
+        {
+            /* italian navigation */
+        }
+        elsif...
+
+=head1 USAGE
+
+No language information has to be managed in route definition. Language path will be added transparently to your routes.
+
+language keyword can be used to retrieve language information inside the route manager.
+
+=head1 OPTIONS
+
+The options you can configure are:
+
+=over 4
+
+=item C<languages> (required)
+
+The array of the languages that will be managed. 
+
+All the languages are two characters codes as in the primary tag defined by http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.10
+
+=item C<default> (required)
+
+The default language that will be used when plugin can't guess desired one (or when desired one is not managed)
+
+=cut
+
