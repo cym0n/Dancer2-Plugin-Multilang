@@ -1,5 +1,4 @@
 package Dancer2::Plugin::Multilang;
-use Dancer2 ':syntax';
 use Dancer2::Plugin;
 
 register 'language' => sub {
@@ -54,8 +53,9 @@ on_plugin_import {
             else
             {
                 $path =~ s/$match_regexp//;
-                $context->response( $context->request->forward($path, {'multilang.lang' => $lang}, undef));
+                $context->response( $context->request->forward($context, $path, {'multilang.lang' => $lang}, undef));
                 $context->response->halt;
+
             }
         })
      );
