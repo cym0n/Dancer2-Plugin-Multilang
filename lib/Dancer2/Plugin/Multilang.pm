@@ -8,10 +8,10 @@ register 'language' => sub {
 
 on_plugin_import {
     my $dsl = shift;
+    my $conf = plugin_setting();
     $dsl->app->add_hook(
         Dancer2::Core::Hook->new(name => 'before', code => sub {
             my $context = shift;
-            my $conf = plugin_setting();
             my @managed_languages = @{$conf->{'languages'}};
             my $default_language = $conf->{'default'};
             my $match_string = "^\/(" . join('|', @managed_languages) . ")";
@@ -62,7 +62,6 @@ on_plugin_import {
      $dsl->app->add_hook(
         Dancer2::Core::Hook->new(name => 'engine.template.after_layout_render', code => sub {
             my $content = shift;
-            my $conf = plugin_setting();
             my @managed_languages = @{$conf->{'languages'}};
             if(my $selected_lan = $dsl->request->params->{'multilang.lang'})
             {
