@@ -1,10 +1,12 @@
 use strict;
 use warnings;
-use Test::More;
 
+use Test::More;
 use Test::TCP;
 use LWP::UserAgent;
+use FindBin;
 
+use t::testapp::lib::Site;
 
 Test::TCP::test_tcp(
     client => sub {
@@ -15,80 +17,53 @@ Test::TCP::test_tcp(
         $ua->cookie_jar({file => "cookies.txt"});
         $ua->default_header('Accept-Language' => "en");
         my $res = $ua->get("http://127.0.0.1:$port/it/");
-        ok($res->is_success);
-        is($res->content, 'it');
+        is($res->content, 'it', "Explicit language in URL returns right language [home]");
         $res  = $ua->get("http://127.0.0.1:$port/it/page");
-        ok($res->is_success);
-        is($res->content, 'page-it');
+        is($res->content, 'page-it', "Explicit language in URL returns right language [page]");
         $res  = $ua->get("http://127.0.0.1:$port/second");
-        ok($res->is_success and $res->previous);
-        is($res->content, 'second-it');
+        ok($res->is_success && $res->previous, "Redirect from /.. to /it/..");
+        is($res->content, 'second-it', "Language configured by previous navigation preserved");
 
         #Enter with no language, but an header
         $ua = LWP::UserAgent->new;
         $ua->cookie_jar({file => "cookies.txt"});
         $ua->default_header('Accept-Language' => "en");
         $res = $ua->get("http://127.0.0.1:$port/page");
-        ok($res->is_success and $res->previous);
-        is($res->content, 'page-en');
-        $res  = $ua->get("http://127.0.0.1:$port/second");
-        ok($res->is_success and $res->previous);
-        is($res->content, 'second-en');
+        ok($res->is_success && $res->previous, "Redirect from /.. to /en/..");
+        is($res->content, 'page-en', "Header language correctly read to return page");
 
         #No language and no header, default is used
         $ua = LWP::UserAgent->new;
         $ua->cookie_jar({file => "cookies.txt"});
         $res = $ua->get("http://127.0.0.1:$port/page");
-        ok($res->is_success and $res->previous);
-        is($res->content, 'page-it');
+        ok($res->is_success && $res->previous, "Redirect from /.. to /it/..");
+        is($res->content, 'page-it', "Default language correctly used when no header/URL is given [home]");
         $res  = $ua->get("http://127.0.0.1:$port/second");
-        ok($res->is_success and $res->previous);
-        is($res->content, 'second-it');
+        ok($res->is_success && $res->previous, "Redirect from /.. to /it/..");
+        is($res->content, 'second-it', "Default language correctly used when no header/URL is given [page]");
 
         #Language switch
         $ua = LWP::UserAgent->new;
         $ua->cookie_jar({file => "cookies.txt"});
         $ua->default_header('Accept-Language' => "en");
         $res = $ua->get("http://127.0.0.1:$port");
-        ok($res->is_success and $res->previous);
-        is($res->content, 'en');
         $res = $ua->get("http://127.0.0.1:$port/it/page");
-        ok($res->is_success);
-        is($res->content, 'page-it');
+        is($res->content, 'page-it', "Language changed from en to it by language in URL");
         $res = $ua->get("http://127.0.0.1:$port/second");
-        ok($res->is_success);
-        is($res->content, 'second-it');
+        ok($res->is_success && $res->previous, "Redirect from /.. to /it/..");
+        is($res->content, 'second-it', "Language change mantained in further navigations");
     },
     server => sub {
         my $port = shift;
         use Dancer2;
-        use Dancer2::Plugin::Multilang;
-
-        get '/' => sub {
-            return language;
-        };      
-        get '/page' => sub {
-            return 'page-' . language;
-        };
-        get '/second' => sub {
-            return 'second-' . language;
-        };
-
-        set(show_errors  => 1,
-            startup_info => 0,
-            environment  => 'developement',
-            port         => $port,
-            logger       => 'capture',
-            log          => 'debug',
-            plugins      => {
-                  Multilang => {
-                      languages => ['en', 'it', 'de'],
-                      default => 'it'
-                  }
-                }
-            );
-
-        Dancer2->runner->server->port($port);
+        if($Dancer2::VERSION < 0.14)
+        {
+            Dancer2->runner->server->port($port);
+        }
+        else
+        {
+            Dancer2->runner->{'port'} = $port;
+        }
         start;
     },
 );

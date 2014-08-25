@@ -1,0 +1,17 @@
+appname: "Testapp"
+
+charset: "UTF-8"
+
+logger: "console"
+log_level: "debug"
+warnings: 1
+
+plugins:
+    Multilang:
+        languages: ['en', 'it', 'de']
+        default: 'it'
+
+engines:
+    template_toolkit:
+        ENCODING: utf8
+        DEFAULT: 'no.tt'

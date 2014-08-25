@@ -1,4 +1,7 @@
 package Dancer2::Plugin::Multilang;
+{
+  $Dancer2::Plugin::Multilang::VERSION = '1.0.0';
+}
 use Dancer2::Plugin;
 
 register 'language' => sub {
