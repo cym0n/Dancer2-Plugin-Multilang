@@ -14,12 +14,11 @@ on_plugin_import {
     my $conf = plugin_setting();
     $dsl->app->add_hook(
         Dancer2::Core::Hook->new(name => 'before', code => sub {
-            my $context = shift;
             my @managed_languages = @{$conf->{'languages'}};
             my $default_language = $conf->{'default'};
             my $match_string = "^\/(" . join('|', @managed_languages) . ")";
             my $match_regexp = qr/$match_string/;
-            my $path = $context->request->path_info();
+            my $path = $dsl->app->request->path_info();
             my $lang = '';
             if ($path =~ $match_regexp)
             {
@@ -27,38 +26,33 @@ on_plugin_import {
             }
             if($lang eq '')
             {
-                if($context->request->params->{'multilang.lang'})
+                if($dsl->app->request->params->{'multilang.lang'})
                 {
                     $dsl->cookie('multilang.lang' => $dsl->param('multilang.lang'));
                 }
                 else
                 {
-                    my $accepted_language = $context->request->header('Accept-Language') ?
-                                            wanted_language($dsl, $context->request->header('Accept-Language'), @managed_languages) :
+                    my $accepted_language = $dsl->app->request->header('Accept-Language') ?
+                                            wanted_language($dsl, $dsl->app->request->header('Accept-Language'), @managed_languages) :
                                             '';
                     if($dsl->cookie('multilang.lang'))
                     {
-                        $context->response($dsl->redirect("/" . $dsl->cookie('multilang.lang') . $path));
-                        $context->response->halt;
+                        $dsl->redirect("/" . $dsl->cookie('multilang.lang') . $path);
                     }
                     elsif($accepted_language ne '')
                     {
-                        $context->response($dsl->redirect("/$accepted_language" . $path));
-                        $context->response->halt;
+                        $dsl->redirect("/$accepted_language" . $path);
                     }
                     else
                     {
-                        $context->response($dsl->redirect("/$default_language" . $path));
-                        $context->response->halt;
+                        $dsl->redirect("/$default_language" . $path);
                     }
                 }
             }
             else
             {
                 $path =~ s/$match_regexp//;
-                $context->response( $context->request->forward($context, $path, {'multilang.lang' => $lang}, undef));
-                $context->response->halt;
-
+                $dsl->forward($path, {'multilang.lang' => $lang}, undef);
             }
         })
      );
