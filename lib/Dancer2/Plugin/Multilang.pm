@@ -113,7 +113,7 @@ Dancer2::Plugin::Multilang - Dancer2 Plugin to create multilanguage sites
 
 =head1 DESCRIPTION
 
-A plugin for Dancer2 to create multilanguage sites. In your app you can configure any route you want, as /myroute/to/page.
+A plugin for Dancer2 to create multilanguage sites. In your app you can configure any route you want as /myroute/to/page.
 
 Plugin will make the app answer to /en/myroute/to/page or /it/myroute/to/page giving the language path to the route manager as a Dancer keyword.
 It will also redirect navigation using information from the headers transmitted from the browser. Language change during navigation will be managed via cookie.
