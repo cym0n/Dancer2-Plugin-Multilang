@@ -1,6 +1,6 @@
 package Dancer2::Plugin::Multilang;
 {
-  $Dancer2::Plugin::Multilang::VERSION = '1.0.0';
+  $Dancer2::Plugin::Multilang::VERSION = '1.0.1';
 }
 use Dancer2::Plugin;
 
