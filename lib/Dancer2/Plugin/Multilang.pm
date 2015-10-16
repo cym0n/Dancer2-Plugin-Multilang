@@ -1,8 +1,8 @@
 package Dancer2::Plugin::Multilang;
 {
-  $Dancer2::Plugin::Multilang::VERSION = '1.0.1';
+  $Dancer2::Plugin::Multilang::VERSION = '1.1.0';
 }
-use Dancer2::Plugin;
+use Dancer2::Plugin 0.156000;
 
 register 'language' => sub {
     my $dsl = shift;
@@ -12,9 +12,9 @@ register 'language' => sub {
 on_plugin_import {
     my $dsl = shift;
     my $conf = plugin_setting();
+    my @managed_languages = @{$conf->{'languages'}}; 
     $dsl->app->add_hook(
         Dancer2::Core::Hook->new(name => 'before', code => sub {
-            my @managed_languages = @{$conf->{'languages'}};
             my $default_language = $conf->{'default'};
             my $match_string = "^\/(" . join('|', @managed_languages) . ")";
             my $match_regexp = qr/$match_string/;
@@ -74,6 +74,12 @@ on_plugin_import {
             }
         })
     );
+    for my $l( @managed_languages)
+    {
+        $dsl->any( ['get', 'post'] => "/" . $l . "/**", sub { $dsl->pass; });
+        $dsl->any( ['get', 'post'] => "/" . $l . "/", sub { $dsl->pass; });
+    }
+
 };
 
 sub wanted_language
