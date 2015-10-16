@@ -167,5 +167,7 @@ All the languages are two characters codes as in the primary tag defined by http
 
 The default language that will be used when plugin can't guess desired one (or when desired one is not managed)
 
+=back
+
 =cut
 
