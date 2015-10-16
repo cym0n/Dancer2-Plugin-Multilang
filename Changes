@@ -1,3 +1,18 @@
+1.1.1
+=====
+
+__Fri Oct 16 2015__
+
+* Pod correction (thanks to Mohammad S. Anwar)
+
+
+1.1.0
+=====
+
+__Mon Dec 08 2014__
+
+* Updated to work with Dancer2 0.156000
+
 1.0.1
 =====
 

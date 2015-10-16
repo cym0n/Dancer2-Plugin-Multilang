@@ -12,6 +12,8 @@ plugins:
         default: 'it'
 
 engines:
-    template_toolkit:
-        ENCODING: utf8
-        DEFAULT: 'no.tt'
+    template:
+        template_toolkit:
+            ENCODING: utf8
+            DEFAULT: 'no.tt'
+template: "template_toolkit"
