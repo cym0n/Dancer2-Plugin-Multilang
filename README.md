@@ -6,7 +6,7 @@ Dancer::Plugin::Multilang - Plugin to manage languages on Dancer2
 VERSION
 =======
 
-version 0.001 (still beta!)
+version 1.1.1
 
 DESCRIPTION
 ===========
@@ -35,4 +35,4 @@ In routes you can use the __language__ keyword to retrieve the language and mana
 AUTHOR
 ======
 
-Simone Faré
+Simone FarÃ©
