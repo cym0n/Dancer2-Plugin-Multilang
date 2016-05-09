@@ -6,7 +6,7 @@ use Dancer2::Plugin 0.156000;
 
 register 'language' => sub {
     my $dsl = shift;
-    return $dsl->request->params->{'multilang.lang'};
+    return $dsl->app->request->params->{'multilang.lang'};
 };
 
 on_plugin_import {
@@ -60,14 +60,14 @@ on_plugin_import {
         Dancer2::Core::Hook->new(name => 'engine.template.after_layout_render', code => sub {
             my $content = shift;
             my @managed_languages = @{$conf->{'languages'}};
-            if(my $selected_lan = $dsl->request->params->{'multilang.lang'})
+            if(my $selected_lan = $dsl->app->request->params->{'multilang.lang'})
             {
                 for(@managed_languages)
                 {
                     my $lan = $_;
                     if($lan ne $selected_lan)
                     {
-                        my $meta_for_lan = '<link rel="alternate" hreflang="' . $lan . '" href="' . $dsl->request->base() . $lan . $dsl->request->path() . "\" />\n";
+                        my $meta_for_lan = '<link rel="alternate" hreflang="' . $lan . '" href="' . $dsl->app->request->base() . $lan . $dsl->app->request->path() . "\" />\n";
                         $$content =~ s/<\/head>/$meta_for_lan<\/head>/;
                     }
                 }                
