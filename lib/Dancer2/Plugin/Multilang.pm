@@ -20,6 +20,7 @@ on_plugin_import {
             my $match_string = "^\/(" . join('|', @managed_languages) . ")";
             my $match_regexp = qr/$match_string/;
             my $path = $dsl->app->request->path_info();
+            my $method = $dsl->app->request->method();
             if($ignore && $path !~ /^$ignore/)
             {
                 my $lang = '';
@@ -40,22 +41,22 @@ on_plugin_import {
                                                 '';
                         if($dsl->cookie('multilang.lang'))
                         {
-                            $dsl->redirect("/" . $dsl->cookie('multilang.lang') . $path);
+                            $dsl->forward("/" . $dsl->cookie('multilang.lang') . $path);
                         }
                         elsif($accepted_language ne '')
                         {
-                            $dsl->redirect("/$accepted_language" . $path);
+                            $dsl->forward("/$accepted_language" . $path);
                         }
                         else
                         {
-                            $dsl->redirect("/$default_language" . $path);
+                            $dsl->forward("/$default_language" . $path);
                         }
                     }
                 }
                 else
                 {
                     $path =~ s/$match_regexp//;
-                    $dsl->forward($path, {'multilang.lang' => $lang}, undef);
+                    $dsl->forward($path, {'multilang.lang' => $lang}, { method => $method });
                 }
             }
         })
