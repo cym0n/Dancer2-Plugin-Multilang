@@ -12,47 +12,51 @@ register 'language' => sub {
 on_plugin_import {
     my $dsl = shift;
     my $conf = plugin_setting();
-    my @managed_languages = @{$conf->{'languages'}}; 
+    my @managed_languages = @{$conf->{'languages'}};
     $dsl->app->add_hook(
         Dancer2::Core::Hook->new(name => 'before', code => sub {
+            my $ignore = $conf->{'no_lang_prefix'} || 0;
             my $default_language = $conf->{'default'};
             my $match_string = "^\/(" . join('|', @managed_languages) . ")";
             my $match_regexp = qr/$match_string/;
             my $path = $dsl->app->request->path_info();
-            my $lang = '';
-            if ($path =~ $match_regexp)
+            if($ignore && $path !~ /^$ignore/)
             {
-                $lang = $1;
-            }
-            if($lang eq '')
-            {
-                if($dsl->app->request->params->{'multilang.lang'})
+                my $lang = '';
+                if ($path =~ $match_regexp)
                 {
-                    $dsl->cookie('multilang.lang' => $dsl->param('multilang.lang'));
+                    $lang = $1;
                 }
-                else
+                if($lang eq '')
                 {
-                    my $accepted_language = $dsl->app->request->header('Accept-Language') ?
-                                            wanted_language($dsl, $dsl->app->request->header('Accept-Language'), @managed_languages) :
-                                            '';
-                    if($dsl->cookie('multilang.lang'))
+                    if($dsl->app->request->params->{'multilang.lang'})
                     {
-                        $dsl->redirect("/" . $dsl->cookie('multilang.lang') . $path);
-                    }
-                    elsif($accepted_language ne '')
-                    {
-                        $dsl->redirect("/$accepted_language" . $path);
+                        $dsl->cookie('multilang.lang' => $dsl->param('multilang.lang'));
                     }
                     else
                     {
-                        $dsl->redirect("/$default_language" . $path);
+                        my $accepted_language = $dsl->app->request->header('Accept-Language') ?
+                                                wanted_language($dsl, $dsl->app->request->header('Accept-Language'), @managed_languages) :
+                                                '';
+                        if($dsl->cookie('multilang.lang'))
+                        {
+                            $dsl->redirect("/" . $dsl->cookie('multilang.lang') . $path);
+                        }
+                        elsif($accepted_language ne '')
+                        {
+                            $dsl->redirect("/$accepted_language" . $path);
+                        }
+                        else
+                        {
+                            $dsl->redirect("/$default_language" . $path);
+                        }
                     }
                 }
-            }
-            else
-            {
-                $path =~ s/$match_regexp//;
-                $dsl->forward($path, {'multilang.lang' => $lang}, undef);
+                else
+                {
+                    $path =~ s/$match_regexp//;
+                    $dsl->forward($path, {'multilang.lang' => $lang}, undef);
+                }
             }
         })
      );
@@ -70,7 +74,7 @@ on_plugin_import {
                         my $meta_for_lan = '<link rel="alternate" hreflang="' . $lan . '" href="' . $dsl->app->request->base() . $lan . $dsl->app->request->path() . "\" />\n";
                         $$content =~ s/<\/head>/$meta_for_lan<\/head>/;
                     }
-                }                
+                }
             }
         })
     );
@@ -126,9 +130,9 @@ Multilanguage SEO headers will be generated to give advice to the search engines
     use Dancer2::Plugin::Multilang
 
     #In your config.yml
-    plugins: 
-      Multilang: 
-        languages: ['it', 'en'] 
+    plugins:
+      Multilang:
+        languages: ['it', 'en']
         default: 'it'
 
     where languages is the array of all the languages managed and default is the response language if no information about language can be retrieved.
@@ -159,13 +163,19 @@ The options you can configure are:
 
 =item C<languages> (required)
 
-The array of the languages that will be managed. 
+The array of the languages that will be managed.
 
 All the languages are two characters codes as in the primary tag defined by http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.10
 
 =item C<default> (required)
 
 The default language that will be used when plugin can't guess desired one (or when desired one is not managed)
+
+=item C<no_lang_prefix> (optional)
+
+Do not add the language path to the route if it has this prefix.
+
+    no_lang_prefix: /auth
 
 =back
 
