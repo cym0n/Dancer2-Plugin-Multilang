@@ -21,7 +21,8 @@ on_plugin_import {
             my $match_regexp = qr/$match_string/;
             my $path = $dsl->app->request->path_info();
             my $method = $dsl->app->request->method();
-            if($ignore && $path !~ /^$ignore/)
+            if(($ignore && $path !~ /^$ignore/) ||
+               ! $ignore )
             {
                 my $lang = '';
                 if ($path =~ $match_regexp)
