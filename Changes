@@ -1,7 +1,7 @@
 1.2.0
 =====
 
-__Sat Oct 29 2016__
+__Sat Oct 30 2016__
 
 * Config option 'no_lang_prefix' to define a path without any language
 change.
