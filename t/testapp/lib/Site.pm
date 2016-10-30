@@ -15,6 +15,9 @@ get '/page' => sub {
 get '/second' => sub {
     return 'second-' . language;
 };
+get '/free' => sub {
+    return 'no-lan'
+};
 
 1;
 

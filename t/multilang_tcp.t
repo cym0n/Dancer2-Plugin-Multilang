@@ -5,6 +5,7 @@ use Test::More;
 use Test::TCP;
 use LWP::UserAgent;
 use FindBin;
+use Data::Dumper;
 
 use t::testapp::lib::Site;
 
@@ -52,6 +53,14 @@ Test::TCP::test_tcp(
         $res = $ua->get("http://127.0.0.1:$port/second");
         ok($res->is_success && $res->previous, "Redirect from /.. to /it/..");
         is($res->content, 'second-it', "Language change mantained in further navigations");
+
+        #no_lang_prefix
+        $ua = LWP::UserAgent->new;
+        $ua->cookie_jar({file => "cookies.txt"});
+        $ua->default_header('Accept-Language' => "en");
+        $res = $ua->get("http://127.0.0.1:$port");
+        $res = $ua->get("http://127.0.0.1:$port/free");
+        ok($res->is_success && ! $res->previous, "no_lang_prefix served without redirection");
     },
     server => sub {
         my $port = shift;

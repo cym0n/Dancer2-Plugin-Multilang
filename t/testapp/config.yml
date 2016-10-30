@@ -10,6 +10,7 @@ plugins:
     Multilang:
         languages: ['en', 'it', 'de']
         default: 'it'
+        no_lang_prefix: '/free'
 
 engines:
     template:
