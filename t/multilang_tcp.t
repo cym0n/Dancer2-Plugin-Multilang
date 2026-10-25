@@ -24,7 +24,8 @@ Test::TCP::test_tcp(
         $res  = $ua->get("http://127.0.0.1:$port/second");
         ok($res->is_success && $res->previous, "Redirect from /.. to /it/..");
         is($res->content, 'second-it', "Language configured by previous navigation preserved");
-
+        $res  = $ua->get("http://127.0.0.1:$port/pa/page");
+        is($res->content, 'page-pa', "Explicit language pa in URL returns right language [page]");
         #Enter with no language, but an header
         $ua = LWP::UserAgent->new;
         $ua->cookie_jar({file => "cookies.txt"});
