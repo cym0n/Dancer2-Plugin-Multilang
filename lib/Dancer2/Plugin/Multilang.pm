@@ -17,7 +17,7 @@ on_plugin_import {
         Dancer2::Core::Hook->new(name => 'before', code => sub {
             my $ignore = $conf->{'no_lang_prefix'} || 0;
             my $default_language = $conf->{'default'};
-            my $match_string = "^\/(" . join('|', @managed_languages) . ")";
+            my $match_string = "^\/(" . join('|', @managed_languages) . ')(?=\/|$)';
             my $match_regexp = qr/$match_string/;
             my $path = $dsl->app->request->path_info();
             my $method = $dsl->app->request->method();
